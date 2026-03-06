@@ -68,10 +68,10 @@ interactive images.
 
   `docker pull nixery.thecompany.website/custom-service:release-v2`
 
-* Efficient serving of image layers from Google Cloud Storage
+* Efficient serving of image layers from Google Cloud Storage or S3
 
-  After building an image, Nixery stores all of its layers in a GCS bucket and
-  forwards requests to retrieve layers to the bucket. This enables efficient
+  After building an image, Nixery stores all of its layers in a storage bucket
+  and forwards requests to retrieve layers to the bucket. This enables efficient
   serving of layers, as well as sharing of image layers between redundant
   instances.
 
@@ -87,7 +87,7 @@ variables:
 * `NIXERY_PKGS_PATH`: A local filesystem path containing a Nix package set to
   use for building
 * `NIXERY_STORAGE_BACKEND`: The type of backend storage to use, currently
-  supported values are `gcs` (Google Cloud Storage) and `filesystem`.
+  supported values are `gcs` (Google Cloud Storage), `filesystem`, and `s3` (Amazon S3-compatible).
 
   For each of these additional backend configuration is necessary, see the
   [storage section](#storage) for details.
@@ -110,10 +110,11 @@ objects need to be publicly accessible.
 Nixery supports multiple different storage backends in which its build cache and
 image layers are kept, and from which they are served.
 
-Currently the available storage backends are Google Cloud Storage and the local
-file system.
+Currently the available storage backends are Google Cloud Storage, the local
+file system, and Amazon S3.
 
 In the GCS case, images are served by redirecting clients to the storage bucket.
+For S3, layers are served by redirecting clients to the S3 bucket with signed URLs.
 Layers stored on the filesystem are served straight from the local disk.
 
 These extra configuration variables must be set to configure storage backends:
@@ -124,6 +125,11 @@ These extra configuration variables must be set to configure storage backends:
   (**optional** for `gcs`)
 * `STORAGE_PATH`: Path to a folder in which to store and from which to serve
   data (**required** for `filesystem`)
+* `S3_BUCKET`: Name of the S3 bucket to use (**required** for `s3`)
+* `S3_ENDPOINT`: Endpoint of S3 service, use with non-AWS providers (**optional** for `s3`)
+* `AWS_REGION`: AWS region for the S3 bucket (**optional** for `s3`, if omitted, will use `us-east-1`, which will work with most non-AWS S3 providers)
+* `S3_ACCESS_KEY`: S3 access key (**optional** for `s3`, uses IAM roles if unset)
+* `S3_SECRET_KEY`: S3 secret key (**optional** for `s3`, uses IAM roles if unset)
 
 ### Background
 

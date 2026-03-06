@@ -29,6 +29,7 @@ type Backend int
 const (
 	GCS = iota
 	FileSystem
+	S3
 )
 
 // Config holds the Nixery configuration options.
@@ -53,8 +54,10 @@ func FromEnv() (Config, error) {
 		b = GCS
 	case "filesystem":
 		b = FileSystem
+	case "s3":
+		b = S3
 	default:
-		slog.Error("NIXERY_STORAGE_BACKEND must be set to a supported value (gcs or filesystem)")
+		slog.Error("NIXERY_STORAGE_BACKEND must be set to a supported value (gcs, filesystem, or s3)")
 		os.Exit(1)
 	}
 
